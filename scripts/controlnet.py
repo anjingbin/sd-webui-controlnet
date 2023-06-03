@@ -181,6 +181,7 @@ class Script(scripts.Script):
         batch_hijack.instance.process_batch_each_callbacks.append(self.batch_tab_process_each)
         batch_hijack.instance.postprocess_batch_each_callbacks.insert(0, self.batch_tab_postprocess_each)
         batch_hijack.instance.postprocess_batch_callbacks.insert(0, self.batch_tab_postprocess)
+        print("ControlNet script init")
 
     def title(self):
         return "ControlNet"
@@ -384,6 +385,7 @@ class Script(scripts.Script):
         unit.control_mode = selector(p, "control_net_control_mode", unit.control_mode, idx)
         unit.pixel_perfect = selector(p, "control_net_pixel_perfect", unit.pixel_perfect, idx)
 
+        print("return remote unit:", unit, " ", unit.enabled, " ", unit.module)
         return unit
 
     @staticmethod
@@ -516,12 +518,16 @@ class Script(scripts.Script):
         if len(units) == 0:
             # fill a null group
             remote_unit = Script.parse_remote_call(p, Script.get_default_ui_unit(), 0)
+            print("remote_unit:", remote_unit)
             if remote_unit.enabled:
                 units.append(remote_unit)
 
+        print("units:", units)
         for idx, unit in enumerate(units):
+            print("for idx, unit:", idx, " ", unit, " ", unit.module)
             unit = Script.parse_remote_call(p, unit, idx)
             if not unit.enabled:
+                print("unit not enabled:", unit, " ", unit.module)
                 continue
 
             enabled_units.append(copy(unit))
@@ -632,6 +638,12 @@ class Script(scripts.Script):
         sd_ldm = p.sd_model
         unet = sd_ldm.model.diffusion_model
 
+        print("ControlNet process hooked")
+        print("p.sd_model:", p.sd_model.sd_checkpoint_info.title)
+        print("p.scripts:", p.scripts)
+        print("p.script_args:", p.script_args)
+        print("args: ", args)
+
         if self.latest_network is not None:
             # always restore (~0.05s)
             self.latest_network.restore(unet)
@@ -639,6 +651,7 @@ class Script(scripts.Script):
         if not batch_hijack.instance.is_batch:
             self.enabled_units = Script.get_enabled_units(p)
 
+        print("enabled_units: ", self.enabled_units)
         if len(self.enabled_units) == 0:
            self.latest_network = None
            return
@@ -939,6 +952,7 @@ class Script(scripts.Script):
 
 
 def on_ui_settings():
+    print("ControlNet ui settings hook")
     section = ('control_net', "ControlNet")
     shared.opts.add_option("control_net_model_config", shared.OptionInfo(
         global_state.default_conf, "Config file for Control Net models", section=section))

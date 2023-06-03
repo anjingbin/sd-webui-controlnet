@@ -50,6 +50,7 @@ class UiControlNetUnit(external_code.ControlNetUnit):
         self.batch_images = batch_images
         self.output_dir = output_dir
         self.loopback = loopback
+        print("UiControlNetUnit.init: args:", args)
 
 
 def update_json_download_link(json_string: str, file_name: str) -> Dict:
