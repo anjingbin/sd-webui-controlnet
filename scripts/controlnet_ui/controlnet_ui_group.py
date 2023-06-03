@@ -908,6 +908,7 @@ class ControlNetUiGroup(object):
             else ControlNetUiGroup.txt2img_submit_button
         ).click(
             fn=UiControlNetUnit,
+            api_name="controlnet_unit", 
             inputs=list(unit_args),
             outputs=unit,
             queue=False,
